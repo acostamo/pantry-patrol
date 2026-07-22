@@ -1,0 +1,7 @@
+{
+  "name": "pantry-patrol",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

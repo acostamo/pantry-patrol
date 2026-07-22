@@ -1,0 +1,73 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Pantry Patrol</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Pantry Patrol</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  @if (items().length === 0) {
+    <div class="empty-state">
+      <ion-icon name="basket-outline" />
+      <p>
+        Your pantry is empty.<br />
+        Scan a barcode or add an item manually.
+      </p>
+    </div>
+  }
+
+  <ion-list>
+    @for (item of items(); track item.id) {
+      <ion-item-sliding #sliding>
+        <!-- Swipe right: quick-renew the expiration date -->
+        <ion-item-options side="start">
+          <ion-item-option color="success" (click)="renew(item); sliding.close()">
+            <ion-icon slot="icon-only" name="refresh-outline" />
+          </ion-item-option>
+        </ion-item-options>
+
+        <ion-item button [detail]="false" (click)="edit(item)">
+          @if (item.thumbUrl) {
+            <ion-thumbnail slot="start">
+              <img [src]="item.thumbUrl" [alt]="item.name" />
+            </ion-thumbnail>
+          }
+          <ion-label>
+            <h2>{{ item.name }}</h2>
+            <p>{{ expiryLabel(item) }}</p>
+          </ion-label>
+          <ion-badge slot="end" [color]="statusColors[expirationStatus(item)]">
+            {{ expirationStatus(item) }}
+          </ion-badge>
+        </ion-item>
+
+        <!-- Swipe left: disposal logic -->
+        <ion-item-options side="end">
+          <ion-item-option color="danger" (click)="remove(item); sliding.close()">
+            <ion-icon slot="icon-only" name="trash-outline" />
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    }
+  </ion-list>
+
+  <!-- Primary action target: camera scanning + manual entry -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button>
+      <ion-icon name="add" />
+    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button data-desc="Scan barcode" (click)="scanAndAdd()">
+        <ion-icon name="barcode-outline" />
+      </ion-fab-button>
+      <ion-fab-button data-desc="Add manually" (click)="addManually()">
+        <ion-icon name="create-outline" />
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+</ion-content>

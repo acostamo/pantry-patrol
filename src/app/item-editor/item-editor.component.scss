@@ -1,0 +1,17 @@
+.product-thumb {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+
+  img {
+    max-height: 120px;
+    border-radius: 8px;
+  }
+}
+
+.date-picker-modal {
+  --width: fit-content;
+  --min-width: 320px;
+  --height: fit-content;
+  --border-radius: 8px;
+}

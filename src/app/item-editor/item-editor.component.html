@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>{{ isNew ? 'Add Item' : 'Edit Item' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button [disabled]="!canSave" (click)="save()">
+        <strong>{{ isNew ? 'Add' : 'Save' }}</strong>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (draft.thumbUrl) {
+    <div class="product-thumb">
+      <img [src]="draft.thumbUrl" [alt]="name" />
+    </div>
+  }
+
+  <ion-list [inset]="true">
+    @if (draft.barcode) {
+      <ion-item>
+        <ion-icon slot="start" name="barcode-outline" />
+        <ion-label>{{ draft.barcode }}</ion-label>
+      </ion-item>
+    }
+
+    <ion-item>
+      <ion-input
+        label="Name"
+        label-placement="stacked"
+        placeholder="e.g. Whole Milk 1L"
+        [(ngModel)]="name"
+      />
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Expiration date</ion-label>
+      <ion-datetime-button slot="end" datetime="expiry-datetime" />
+    </ion-item>
+  </ion-list>
+
+  <!-- Native scroll-wheel date picker, per the blueprint UX matrix -->
+  <ion-modal [keepContentsMounted]="true" class="date-picker-modal">
+    <ng-template>
+      <ion-datetime
+        id="expiry-datetime"
+        presentation="date"
+        [min]="minDate"
+        [showDefaultButtons]="true"
+        doneText="Confirm"
+        cancelText="Back"
+        [(ngModel)]="expireDate"
+      />
+    </ng-template>
+  </ion-modal>
+</ion-content>
