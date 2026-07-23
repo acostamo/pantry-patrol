@@ -1,12 +1,14 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="cancel()">Cancel</ion-button>
+      <ion-button (click)="cancel()">{{ 'editor.cancel' | translate }}</ion-button>
     </ion-buttons>
-    <ion-title>{{ isNew ? 'Add Item' : 'Edit Item' }}</ion-title>
+    <ion-title>
+      {{ (isNew ? 'editor.add.title' : 'editor.edit.title') | translate }}
+    </ion-title>
     <ion-buttons slot="end">
       <ion-button [disabled]="!canSave" (click)="save()">
-        <strong>{{ isNew ? 'Add' : 'Save' }}</strong>
+        <strong>{{ (isNew ? 'editor.add' : 'editor.save') | translate }}</strong>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -29,20 +31,19 @@
 
     <ion-item>
       <ion-input
-        label="Name"
+        [label]="'editor.name.label' | translate"
         label-placement="stacked"
-        placeholder="e.g. Whole Milk 1L"
+        [placeholder]="'editor.name.placeholder' | translate"
         [(ngModel)]="name"
       />
     </ion-item>
 
     <ion-item>
-      <ion-label>Expiration date</ion-label>
+      <ion-label>{{ 'editor.expiry.label' | translate }}</ion-label>
       <ion-datetime-button slot="end" datetime="expiry-datetime" />
     </ion-item>
   </ion-list>
 
-  <!-- Native scroll-wheel date picker, per the blueprint UX matrix -->
   <ion-modal [keepContentsMounted]="true" class="date-picker-modal">
     <ng-template>
       <ion-datetime
@@ -50,8 +51,8 @@
         presentation="date"
         [min]="minDate"
         [showDefaultButtons]="true"
-        doneText="Confirm"
-        cancelText="Back"
+        [doneText]="'editor.date.confirm' | translate"
+        [cancelText]="'editor.date.cancel' | translate"
         [(ngModel)]="expireDate"
       />
     </ng-template>

@@ -21,6 +21,7 @@ import { addIcons } from 'ionicons';
 import { barcodeOutline } from 'ionicons/icons';
 
 import { PantryItem } from '../core/models/pantry-item.model';
+import { TranslatePipe } from '../core/i18n/translate.pipe';
 
 /**
  * Staging phase of the blueprint lifecycle: captures the item name and the
@@ -49,6 +50,7 @@ import { PantryItem } from '../core/models/pantry-item.model';
     IonModal,
     IonTitle,
     IonToolbar,
+    TranslatePipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
