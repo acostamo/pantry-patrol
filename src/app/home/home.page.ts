@@ -13,6 +13,7 @@ import {
   IonItemSliding,
   IonLabel,
   IonList,
+  IonMenuButton,
   IonThumbnail,
   IonTitle,
   IonToolbar,
@@ -39,6 +40,8 @@ import { PantryStore } from '../core/services/pantry-store.service';
 import { ProductResolverService } from '../core/services/product-resolver.service';
 import { ScannerService } from '../core/services/scanner.service';
 import { ItemEditorComponent } from '../item-editor/item-editor.component';
+import { I18nService } from '../core/i18n/i18n.service';
+import { TranslatePipe } from '../core/i18n/translate.pipe';
 
 @Component({
   selector: 'app-home',
@@ -58,9 +61,11 @@ import { ItemEditorComponent } from '../item-editor/item-editor.component';
     IonItemSliding,
     IonLabel,
     IonList,
+    IonMenuButton,
     IonThumbnail,
     IonTitle,
     IonToolbar,
+    TranslatePipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -70,6 +75,7 @@ export class HomePage {
   private readonly resolver = inject(ProductResolverService);
   private readonly modalCtrl = inject(ModalController);
   private readonly toastCtrl = inject(ToastController);
+  private readonly i18n = inject(I18nService);
 
   protected readonly items = this.store.items;
   protected readonly daysUntilExpiry = daysUntilExpiry;
@@ -111,19 +117,22 @@ export class HomePage {
 
   protected async renew(item: PantryItem): Promise<void> {
     await this.store.renew(item);
-    await this.showToast(`"${item.name}" renewed for 7 more days`);
+    await this.showToast(this.i18n.translate('toast.renewed', item.name));
   }
 
   protected async remove(item: PantryItem): Promise<void> {
     await this.store.remove(item);
-    await this.showToast(`"${item.name}" removed`);
+    await this.showToast(this.i18n.translate('toast.removed', item.name));
   }
 
   protected expiryLabel(item: PantryItem): string {
     const days = daysUntilExpiry(item.expireDate);
-    if (days < 0) return `Expired ${-days} day${days === -1 ? '' : 's'} ago`;
-    if (days === 0) return 'Expires today';
-    return `Expires in ${days} day${days === 1 ? '' : 's'}`;
+    const i = this.i18n;
+    if (days < 0) {
+      return i.translate(days === -1 ? 'expiry.past.singular' : 'expiry.past.plural', String(-days));
+    }
+    if (days === 0) return i.translate('expiry.today');
+    return i.translate(days === 1 ? 'expiry.future.singular' : 'expiry.future.plural', String(days));
   }
 
   private async openEditor(draft: PantryItem, isNew = true): Promise<void> {
@@ -138,10 +147,10 @@ export class HomePage {
 
     if (isNew) {
       await this.store.add(data);
-      await this.showToast(`"${data.name}" added to your pantry`);
+      await this.showToast(this.i18n.translate('toast.added', data.name));
     } else {
       await this.store.update(data);
-      await this.showToast(`"${data.name}" updated`);
+      await this.showToast(this.i18n.translate('toast.updated', data.name));
     }
   }
 

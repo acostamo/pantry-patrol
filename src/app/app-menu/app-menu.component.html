@@ -1,0 +1,20 @@
+<ion-menu contentId="main-content" side="start">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>{{ 'menu.title' | translate }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <ion-list-header>{{ 'menu.language' | translate }}</ion-list-header>
+      <ion-radio-group [(ngModel)]="lang">
+        @for (l of langs; track l) {
+          <ion-item>
+            <ion-radio slot="start" [value]="l" />
+            <ion-label>{{ LANG_NAMES[l] }}</ion-label>
+          </ion-item>
+        }
+      </ion-radio-group>
+    </ion-list>
+  </ion-content>
+</ion-menu>

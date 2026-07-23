@@ -16,15 +16,15 @@ Built with **Ionic 8 + Angular 22 (standalone, signals) + Capacitor 8 + TypeScri
 
 ## Prerequisites
 
-- Node.js 20.19+ / 22.12+ / 24+ and npm
+- Node.js 20.19+ / 22.12+ / 24+ and **Yarn Classic** (`yarn --version` should show `1.x`)
 - For Android builds: Android Studio (SDK + device or emulator)
 - For iOS builds: a Mac with Xcode and CocoaPods
 
 ## Getting started (web development)
 
 ```bash
-npm install
-npm start
+yarn install
+yarn start
 ```
 
 Then open http://localhost:4200. On web, native-only features are stubbed: the scanner FAB falls back to manual entry, and local notifications/haptics are skipped. The pantry itself works fully (persisted to localStorage).
@@ -32,9 +32,9 @@ Then open http://localhost:4200. On web, native-only features are stubbed: the s
 ## Run on Android
 
 ```bash
-npx ng build              # always build first — cap sync copies www/
-npx cap sync android
-npx cap open android      # opens Android Studio; run on a device/emulator
+yarn ng build              # always build first — cap sync copies www/
+yarn cap sync android
+yarn cap open android      # opens Android Studio; run on a device/emulator
 ```
 
 Declared permissions: `CAMERA` (barcode scanning), `VIBRATE` (haptics), `POST_NOTIFICATIONS` (expiration alerts on Android 13+).
@@ -44,22 +44,24 @@ Declared permissions: `CAMERA` (barcode scanning), `VIBRATE` (haptics), `POST_NO
 iOS requires macOS. Copy the project to a Mac, then:
 
 ```bash
-npx cap sync ios          # first time (runs pod install); later builds: npx cap copy ios
-npx cap open ios          # opens Xcode
+yarn cap sync ios          # first time (runs pod install); later builds: yarn cap copy ios
+yarn cap open ios          # opens Xcode
 ```
+
+> **Windows users:** PowerShell blocks `.ps1` scripts by default. Run `yarn.cmd` / `yarnpkg.cmd` instead of `yarn` / `yarnpkg` to work around this. The same applies to the commands below.
 
 `NSCameraUsageDescription` is already declared in `ios/App/App/Info.plist`.
 
 ## Available scripts
 
-| Command                    | Description                                        |
-| -------------------------- | -------------------------------------------------- |
-| `npm start`                | Dev server with live reload                        |
-| `npx ng build`             | Production build → `www/`                          |
-| `npx ng lint`              | ESLint (flat config)                               |
-| `npx ng test`              | Karma + Jasmine tests (add `--watch=false --browsers=ChromeHeadless` for CI) |
-| `npx cap sync android`     | Copy web assets + update native Android project    |
-| `npx cap copy ios`         | Copy web assets into the iOS project (no pods)     |
+| Command                        | Description                                        |
+| ------------------------------ | -------------------------------------------------- |
+| `yarn start`                   | Dev server with live reload                        |
+| `yarn ng build`                | Production build → `www/`                          |
+| `yarn ng lint`                 | ESLint (flat config)                               |
+| `yarn ng test`                 | Karma + Jasmine tests (add `--watch=false --browsers=ChromeHeadless` for CI) |
+| `yarn cap sync android`        | Copy web assets + update native Android project    |
+| `yarn cap copy ios`            | Copy web assets into the iOS project (no pods)     |
 
 ## Project structure
 

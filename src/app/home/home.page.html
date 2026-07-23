@@ -1,23 +1,21 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Pantry Patrol</ion-title>
+    <ion-menu-button slot="start" />
+    <ion-title>{{ 'home.title' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" id="main-content">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Pantry Patrol</ion-title>
+      <ion-title size="large">{{ 'home.title' | translate }}</ion-title>
     </ion-toolbar>
   </ion-header>
 
   @if (items().length === 0) {
     <div class="empty-state">
       <ion-icon name="basket-outline" />
-      <p>
-        Your pantry is empty.<br />
-        Scan a barcode or add an item manually.
-      </p>
+      <p>{{ 'home.empty' | translate }}</p>
     </div>
   }
 
@@ -42,7 +40,7 @@
             <p>{{ expiryLabel(item) }}</p>
           </ion-label>
           <ion-badge slot="end" [color]="statusColors[expirationStatus(item)]">
-            {{ expirationStatus(item) }}
+            {{ expirationStatus(item) | translate }}
           </ion-badge>
         </ion-item>
 
@@ -62,10 +60,14 @@
       <ion-icon name="add" />
     </ion-fab-button>
     <ion-fab-list side="top">
-      <ion-fab-button data-desc="Scan barcode" (click)="scanAndAdd()">
+      <ion-fab-button
+        [attr.data-desc]="'home.scan' | translate"
+        (click)="scanAndAdd()">
         <ion-icon name="barcode-outline" />
       </ion-fab-button>
-      <ion-fab-button data-desc="Add manually" (click)="addManually()">
+      <ion-fab-button
+        [attr.data-desc]="'home.manual' | translate"
+        (click)="addManually()">
         <ion-icon name="create-outline" />
       </ion-fab-button>
     </ion-fab-list>
