@@ -20,12 +20,23 @@
   }
 }
 
-ion-thumbnail {
-  --border-radius: 8px;
-}
-
 ion-badge {
   margin-left: 8px;
+}
+
+.summary-bar {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  flex-wrap: wrap;
+}
+
+.divider-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  object-fit: cover;
 }
 
 // Small floating labels above the mini FAB buttons.

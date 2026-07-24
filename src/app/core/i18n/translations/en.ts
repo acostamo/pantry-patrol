@@ -30,6 +30,8 @@ export const en: Record<string, string> = {
   'toast.removed': '"{0}" removed',
   'toast.renewed': '"{0}" renewed for 7 more days',
 
+  'undo': 'Undo',
+
   'product.cached': 'Cached Barcode: {0}',
   'product.unidentified': 'Unidentified Item',
   'product.manual': 'Manual Record Entry Required',

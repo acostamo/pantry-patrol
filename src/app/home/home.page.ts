@@ -1,20 +1,21 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import {
   IonBadge,
   IonContent,
+  IonChip,
   IonFab,
   IonFabButton,
   IonFabList,
   IonHeader,
   IonIcon,
   IonItem,
+  IonItemDivider,
   IonItemOption,
   IonItemOptions,
   IonItemSliding,
   IonLabel,
   IonList,
   IonMenuButton,
-  IonThumbnail,
   IonTitle,
   IonToolbar,
   ModalController,
@@ -49,6 +50,7 @@ import { TranslatePipe } from '../core/i18n/translate.pipe';
   styleUrls: ['home.page.scss'],
   imports: [
     IonBadge,
+    IonChip,
     IonContent,
     IonFab,
     IonFabButton,
@@ -56,13 +58,13 @@ import { TranslatePipe } from '../core/i18n/translate.pipe';
     IonHeader,
     IonIcon,
     IonItem,
+    IonItemDivider,
     IonItemOption,
     IonItemOptions,
     IonItemSliding,
     IonLabel,
     IonList,
     IonMenuButton,
-    IonThumbnail,
     IonTitle,
     IonToolbar,
     TranslatePipe,
@@ -78,6 +80,31 @@ export class HomePage {
   private readonly i18n = inject(I18nService);
 
   protected readonly items = this.store.items;
+  /** Groups items by product name, keeping the soonest-expiry sort within each group. */
+  protected readonly groups = computed(() => {
+    const buckets = new Map<string, PantryItem[]>();
+    for (const item of this.items()) {
+      const list = buckets.get(item.name) || [];
+      list.push(item);
+      buckets.set(item.name, list);
+    }
+    return [...buckets.entries()]
+      .map(([name, items]) => ({
+        name,
+        items,
+        thumbUrl: items.find(i => i.thumbUrl)?.thumbUrl || '',
+      }))
+      .sort((a, b) => a.items[0].expireDate.localeCompare(b.items[0].expireDate));
+  });
+
+  protected readonly summary = computed(() => {
+    const all = this.items();
+    return {
+      expired: all.filter(i => expirationStatus(i) === 'EXPIRED').length,
+      impending: all.filter(i => expirationStatus(i) === 'IMPENDING').length,
+      stable: all.filter(i => expirationStatus(i) === 'STABLE').length,
+    };
+  });
   protected readonly daysUntilExpiry = daysUntilExpiry;
   protected readonly expirationStatus = expirationStatus;
   protected readonly statusColors: Record<ExpirationStatus, string> = {
@@ -121,8 +148,17 @@ export class HomePage {
   }
 
   protected async remove(item: PantryItem): Promise<void> {
+    const snapshot = { ...item };
     await this.store.remove(item);
-    await this.showToast(this.i18n.translate('toast.removed', item.name));
+    const toast = await this.toastCtrl.create({
+      message: this.i18n.translate('toast.removed', snapshot.name),
+      duration: 4000,
+      position: 'bottom',
+      buttons: [
+        { text: this.i18n.translate('undo'), handler: () => { void this.store.add(snapshot); } },
+      ],
+    });
+    await toast.present();
   }
 
   protected expiryLabel(item: PantryItem): string {
