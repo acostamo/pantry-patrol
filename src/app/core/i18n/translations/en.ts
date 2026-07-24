@@ -41,4 +41,10 @@ export const en: Record<string, string> = {
 
   'menu.title': 'Settings',
   'menu.language': 'Language',
+
+  'photo.title': 'Product photo',
+  'photo.camera': 'Take photo',
+  'photo.gallery': 'Choose from gallery',
+  'photo.remove': 'Remove photo',
+  'photo.placeholder': 'Add photo',
 };

@@ -3,6 +3,7 @@ import { Preferences } from '@capacitor/preferences';
 
 import { PantryItem, RENEW_EXTENSION_DAYS } from '../models/pantry-item.model';
 import { NotificationService } from './notification.service';
+import { PhotoService } from './photo.service';
 
 const STORAGE_KEY = 'pantry_items';
 
@@ -18,6 +19,7 @@ const STORAGE_KEY = 'pantry_items';
 @Injectable({ providedIn: 'root' })
 export class PantryStore {
   private readonly notifications = inject(NotificationService);
+  private readonly photoService = inject(PhotoService);
   private readonly itemsSignal = signal<PantryItem[]>([]);
 
   /** All items, sorted by soonest expiration first. */
@@ -48,6 +50,7 @@ export class PantryStore {
     this.itemsSignal.update((items) => items.filter((i) => i.id !== item.id));
     await this.persist();
     await this.notifications.cancelExpirationAlert(item.notificationId);
+    void this.photoService.deleteIfLocal(item.thumbUrl);
   }
 
   /** Swipe-right quick renew: push the expiration date into the future. */

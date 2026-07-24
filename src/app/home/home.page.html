@@ -34,8 +34,8 @@
   <ion-list>
     @for (group of groups(); track group.name) {
       <ion-item-divider sticky="true">
-        @if (group.thumbUrl) {
-          <img slot="start" [src]="group.thumbUrl" [alt]="group.name" class="divider-thumb" />
+        @if (group.displayThumb) {
+          <img slot="start" [src]="group.displayThumb" [alt]="group.name" class="divider-thumb" />
         }
         <ion-label>{{ group.name }}</ion-label>
         <ion-badge slot="end" color="medium">{{ group.items.length }}</ion-badge>

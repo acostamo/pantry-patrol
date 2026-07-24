@@ -38,6 +38,7 @@ import {
   PantryItem,
 } from '../core/models/pantry-item.model';
 import { PantryStore } from '../core/services/pantry-store.service';
+import { PhotoService } from '../core/services/photo.service';
 import { ProductResolverService } from '../core/services/product-resolver.service';
 import { ScannerService } from '../core/services/scanner.service';
 import { ItemEditorComponent } from '../item-editor/item-editor.component';
@@ -78,6 +79,7 @@ export class HomePage {
   private readonly modalCtrl = inject(ModalController);
   private readonly toastCtrl = inject(ToastController);
   private readonly i18n = inject(I18nService);
+  private readonly photoService = inject(PhotoService);
 
   protected readonly items = this.store.items;
   /** Groups items by product name, keeping the soonest-expiry sort within each group. */
@@ -93,6 +95,7 @@ export class HomePage {
         name,
         items,
         thumbUrl: items.find(i => i.thumbUrl)?.thumbUrl || '',
+        displayThumb: this.photoService.getDisplayUri(items.find(i => i.thumbUrl)?.thumbUrl || ''),
       }))
       .sort((a, b) => a.items[0].expireDate.localeCompare(b.items[0].expireDate));
   });
@@ -155,7 +158,7 @@ export class HomePage {
       duration: 4000,
       position: 'bottom',
       buttons: [
-        { text: this.i18n.translate('undo'), handler: () => { void this.store.add(snapshot); } },
+        { text: this.i18n.translate('undo'), handler: async () => { await this.store.add(snapshot); } },
       ],
     });
     await toast.present();
