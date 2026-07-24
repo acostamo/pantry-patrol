@@ -15,11 +15,19 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  @if (draft.thumbUrl) {
-    <div class="product-thumb">
-      <img [src]="draft.thumbUrl" [alt]="name" />
-    </div>
-  }
+  <div class="photo-area" (click)="pickPhoto()">
+    @if (previewUri) {
+      <img [src]="previewUri" [alt]="name" class="photo-preview" />
+      <div class="photo-overlay">
+        <ion-icon name="camera-outline" />
+      </div>
+    } @else {
+      <div class="photo-placeholder">
+        <ion-icon name="camera-outline" />
+        <span>{{ 'photo.placeholder' | translate }}</span>
+      </div>
+    }
+  </div>
 
   <ion-list [inset]="true">
     @if (draft.barcode) {

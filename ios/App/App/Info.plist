@@ -49,5 +49,7 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Pantry Patrol requires persistent camera stream capabilities to perform real-time localized barcode hardware scanning.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Pantry Patrol uses the photo library to let you attach product images to your pantry items.</string>
 </dict>
 </plist>
