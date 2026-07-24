@@ -30,6 +30,8 @@ export const es: Record<string, string> = {
   'toast.removed': '"{0}" eliminado',
   'toast.renewed': '"{0}" renovado por 7 días más',
 
+  'undo': 'Deshacer',
+
   'product.cached': 'Código en caché: {0}',
   'product.unidentified': 'Artículo no identificado',
   'product.manual': 'Requiere registro manual',

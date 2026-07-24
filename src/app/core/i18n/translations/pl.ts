@@ -30,6 +30,8 @@ export const pl: Record<string, string> = {
   'toast.removed': '"{0}" usunięto',
   'toast.renewed': '"{0}" przedłużono o 7 dni',
 
+  'undo': 'Cofnij',
+
   'product.cached': 'Kod zapisany: {0}',
   'product.unidentified': 'Nieznany produkt',
   'product.manual': 'Wymaga ręcznego wpisania',

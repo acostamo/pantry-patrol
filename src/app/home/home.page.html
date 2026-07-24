@@ -17,44 +17,57 @@
       <ion-icon name="basket-outline" />
       <p>{{ 'home.empty' | translate }}</p>
     </div>
+  } @else {
+    <div class="summary-bar">
+      <ion-chip [outline]="true" color="danger">
+        <ion-label>{{ summary().expired }} {{ 'EXPIRED' | translate }}</ion-label>
+      </ion-chip>
+      <ion-chip [outline]="true" color="warning">
+        <ion-label>{{ summary().impending }} {{ 'IMPENDING' | translate }}</ion-label>
+      </ion-chip>
+      <ion-chip [outline]="true" color="success">
+        <ion-label>{{ summary().stable }} {{ 'STABLE' | translate }}</ion-label>
+      </ion-chip>
+    </div>
   }
 
   <ion-list>
-    @for (item of items(); track item.id) {
-      <ion-item-sliding #sliding>
-        <!-- Swipe right: quick-renew the expiration date -->
-        <ion-item-options side="start">
-          <ion-item-option color="success" (click)="renew(item); sliding.close()">
-            <ion-icon slot="icon-only" name="refresh-outline" />
-          </ion-item-option>
-        </ion-item-options>
+    @for (group of groups(); track group.name) {
+      <ion-item-divider sticky="true">
+        @if (group.thumbUrl) {
+          <img slot="start" [src]="group.thumbUrl" [alt]="group.name" class="divider-thumb" />
+        }
+        <ion-label>{{ group.name }}</ion-label>
+        <ion-badge slot="end" color="medium">{{ group.items.length }}</ion-badge>
+      </ion-item-divider>
 
-        <ion-item button [detail]="false" (click)="edit(item)">
-          @if (item.thumbUrl) {
-            <ion-thumbnail slot="start">
-              <img [src]="item.thumbUrl" [alt]="item.name" />
-            </ion-thumbnail>
-          }
-          <ion-label>
-            <h2>{{ item.name }}</h2>
-            <p>{{ expiryLabel(item) }}</p>
-          </ion-label>
-          <ion-badge slot="end" [color]="statusColors[expirationStatus(item)]">
-            {{ expirationStatus(item) | translate }}
-          </ion-badge>
-        </ion-item>
+      @for (item of group.items; track item.id) {
+        <ion-item-sliding #sliding>
+          <ion-item-options side="start">
+            <ion-item-option color="success" (click)="renew(item); sliding.close()">
+              <ion-icon slot="icon-only" name="refresh-outline" />
+            </ion-item-option>
+          </ion-item-options>
 
-        <!-- Swipe left: disposal logic -->
-        <ion-item-options side="end">
-          <ion-item-option color="danger" (click)="remove(item); sliding.close()">
-            <ion-icon slot="icon-only" name="trash-outline" />
-          </ion-item-option>
-        </ion-item-options>
-      </ion-item-sliding>
+          <ion-item button [detail]="false" (click)="edit(item)">
+            <ion-label>
+              <p>{{ expiryLabel(item) }}</p>
+            </ion-label>
+            <ion-badge slot="end" [color]="statusColors[expirationStatus(item)]">
+              {{ expirationStatus(item) | translate }}
+            </ion-badge>
+          </ion-item>
+
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="remove(item); sliding.close()">
+              <ion-icon slot="icon-only" name="trash-outline" />
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      }
     }
   </ion-list>
 
-  <!-- Primary action target: camera scanning + manual entry -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button>
       <ion-icon name="add" />
