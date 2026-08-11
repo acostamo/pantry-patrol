@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
 import {
   IonBadge,
-  IonContent,
   IonChip,
+  IonContent,
   IonFab,
   IonFabButton,
   IonFabList,
@@ -16,34 +16,29 @@ import {
   IonLabel,
   IonList,
   IonMenuButton,
+  IonText,
   IonTitle,
   IonToolbar,
   ModalController,
   ToastController,
 } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  add,
-  barcodeOutline,
-  basketOutline,
-  createOutline,
-  refreshOutline,
-  trashOutline,
-} from 'ionicons/icons';
+import {addIcons} from 'ionicons';
+import {add, barcodeOutline, basketOutline, createOutline, refreshOutline, star, trashOutline,} from 'ionicons/icons';
 
 import {
   daysUntilExpiry,
+  DEFAULT_QUANTITY,
   ExpirationStatus,
   expirationStatus,
   PantryItem,
 } from '../core/models/pantry-item.model';
-import { PantryStore } from '../core/services/pantry-store.service';
-import { PhotoService } from '../core/services/photo.service';
-import { ProductResolverService } from '../core/services/product-resolver.service';
-import { ScannerService } from '../core/services/scanner.service';
-import { ItemEditorComponent } from '../item-editor/item-editor.component';
-import { I18nService } from '../core/i18n/i18n.service';
-import { TranslatePipe } from '../core/i18n/translate.pipe';
+import {PantryStore} from '../core/services/pantry-store.service';
+import {PhotoService} from '../core/services/photo.service';
+import {ProductResolverService} from '../core/services/product-resolver.service';
+import {ScannerService} from '../core/services/scanner.service';
+import {ItemEditorComponent} from '../item-editor/item-editor.component';
+import {I18nService} from '../core/i18n/i18n.service';
+import {TranslatePipe} from '../core/i18n/translate.pipe';
 
 @Component({
   selector: 'app-home',
@@ -66,6 +61,7 @@ import { TranslatePipe } from '../core/i18n/translate.pipe';
     IonLabel,
     IonList,
     IonMenuButton,
+    IonText,
     IonTitle,
     IonToolbar,
     TranslatePipe,
@@ -94,6 +90,7 @@ export class HomePage {
       .map(([name, items]) => ({
         name,
         items,
+        units: items.reduce((sum, i) => sum + i.quantity, 0),
         thumbUrl: items.find(i => i.thumbUrl)?.thumbUrl || '',
         displayThumb: this.photoService.getDisplayUri(items.find(i => i.thumbUrl)?.thumbUrl || ''),
       }))
@@ -117,7 +114,7 @@ export class HomePage {
   };
 
   constructor() {
-    addIcons({ add, barcodeOutline, basketOutline, createOutline, refreshOutline, trashOutline });
+    addIcons({ add, barcodeOutline, basketOutline, createOutline, refreshOutline, star, trashOutline });
   }
 
   /** Capture + resolution phases: scan a barcode, resolve its metadata, stage it. */
@@ -201,6 +198,12 @@ export class HomePage {
       thumbUrl: '',
       expireDate: '',
       notificationId: Math.floor(Math.random() * 1_000_000_000),
+      quantity: DEFAULT_QUANTITY,
+      addedDate: new Date().toISOString(),
+      favorite: false,
+      notes: '',
+      tags: [],
+      price: 0,
       ...prefill,
     };
   }

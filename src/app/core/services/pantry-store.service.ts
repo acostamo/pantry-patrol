@@ -1,9 +1,9 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
-import { Preferences } from '@capacitor/preferences';
+import {computed, inject, Injectable, signal} from '@angular/core';
+import {Preferences} from '@capacitor/preferences';
 
-import { PantryItem, RENEW_EXTENSION_DAYS } from '../models/pantry-item.model';
-import { NotificationService } from './notification.service';
-import { PhotoService } from './photo.service';
+import {normalizeItem, PantryItem, RENEW_EXTENSION_DAYS} from '../models/pantry-item.model';
+import {NotificationService} from './notification.service';
+import {PhotoService} from './photo.service';
 
 const STORAGE_KEY = 'pantry_items';
 
@@ -22,15 +22,18 @@ export class PantryStore {
   private readonly photoService = inject(PhotoService);
   private readonly itemsSignal = signal<PantryItem[]>([]);
 
-  /** All items, sorted by soonest expiration first. */
+  /** All items, sorted by favorite first, then soonest expiration. */
   readonly items = computed(() =>
-    [...this.itemsSignal()].sort((a, b) => a.expireDate.localeCompare(b.expireDate)),
+    [...this.itemsSignal()].sort(
+      (a, b) => Number(b.favorite) - Number(a.favorite) || a.expireDate.localeCompare(b.expireDate),
+    ),
   );
 
   /** Loads the persisted inventory from on-device storage (call once at startup). */
   async load(): Promise<void> {
     const { value } = await Preferences.get({ key: STORAGE_KEY });
-    this.itemsSignal.set(value ? (JSON.parse(value) as PantryItem[]) : []);
+    const stored = value ? (JSON.parse(value) as Partial<PantryItem>[]) : [];
+    this.itemsSignal.set(stored.map(normalizeItem));
   }
 
   async add(item: PantryItem): Promise<void> {

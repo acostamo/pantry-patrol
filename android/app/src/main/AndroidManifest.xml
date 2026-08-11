@@ -32,10 +32,4 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- Barcode scanning (ML Kit camera stream) -->
-    <uses-permission android:name="android.permission.CAMERA" />
-    <!-- Haptic feedback -->
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <!-- Local expiration alerts on Android 13+ -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 </manifest>

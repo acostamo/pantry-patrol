@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, Input, OnInit} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 import {
   ActionSheetController,
   IonButton,
   IonButtons,
+  IonChip,
   IonContent,
   IonDatetime,
   IonDatetimeButton,
@@ -14,17 +15,18 @@ import {
   IonLabel,
   IonList,
   IonModal,
+  IonTextarea,
   IonTitle,
   IonToolbar,
   ModalController,
 } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { barcodeOutline, cameraOutline } from 'ionicons/icons';
+import {addIcons} from 'ionicons';
+import {add, barcodeOutline, cameraOutline, close, remove, star, starOutline} from 'ionicons/icons';
 
-import { PantryItem } from '../core/models/pantry-item.model';
-import { I18nService } from '../core/i18n/i18n.service';
-import { PhotoService } from '../core/services/photo.service';
-import { TranslatePipe } from '../core/i18n/translate.pipe';
+import {DEFAULT_QUANTITY, PantryItem} from '../core/models/pantry-item.model';
+import {I18nService} from '../core/i18n/i18n.service';
+import {PhotoService} from '../core/services/photo.service';
+import {TranslatePipe} from '../core/i18n/translate.pipe';
 
 @Component({
   selector: 'app-item-editor',
@@ -34,6 +36,7 @@ import { TranslatePipe } from '../core/i18n/translate.pipe';
     FormsModule,
     IonButton,
     IonButtons,
+    IonChip,
     IonContent,
     IonDatetime,
     IonDatetimeButton,
@@ -44,6 +47,7 @@ import { TranslatePipe } from '../core/i18n/translate.pipe';
     IonLabel,
     IonList,
     IonModal,
+    IonTextarea,
     IonTitle,
     IonToolbar,
     TranslatePipe,
@@ -65,6 +69,12 @@ export class ItemEditorComponent implements OnInit {
   protected name = '';
   protected expireDate = '';
   protected readonly minDate = new Date().toISOString();
+  protected quantity = DEFAULT_QUANTITY;
+  protected favorite = false;
+  protected notes = '';
+  protected price = 0;
+  protected tagInput = '';
+  protected tags: string[] = [];
 
   /**
    * Photo state across editing:
@@ -75,12 +85,17 @@ export class ItemEditorComponent implements OnInit {
   private tempPhotoUri?: string | null;
 
   constructor() {
-    addIcons({ barcodeOutline, cameraOutline });
+    addIcons({ add, barcodeOutline, cameraOutline, close, remove, star, starOutline });
   }
 
   ngOnInit(): void {
     this.name = this.draft.name;
     this.expireDate = this.draft.expireDate || new Date(Date.now() + 7 * 86_400_000).toISOString();
+    this.quantity = this.draft.quantity || DEFAULT_QUANTITY;
+    this.favorite = this.draft.favorite;
+    this.notes = this.draft.notes ?? '';
+    this.price = this.draft.price || 0;
+    this.tags = [...(this.draft.tags ?? [])];
   }
 
   protected get previewUri(): string {
@@ -91,6 +106,47 @@ export class ItemEditorComponent implements OnInit {
 
   protected get canSave(): boolean {
     return this.name.trim().length > 0 && this.expireDate.length > 0;
+  }
+
+  /** Total cost hint = price per unit × quantity, shown only when a price is set. */
+  protected get totalPrice(): number {
+    return this.price * this.quantity;
+  }
+
+  /** Localized "added on" caption for existing items. */
+  protected get addedDateLabel(): string {
+    const d = new Date(this.draft.addedDate);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleDateString(this.i18n.lang(), {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+  }
+
+  protected decrementQuantity(): void {
+    this.quantity = Math.max(1, this.quantity - 1);
+  }
+
+  protected incrementQuantity(): void {
+    this.quantity = Math.min(99, this.quantity + 1);
+  }
+
+  protected toggleFavorite(): void {
+    this.favorite = !this.favorite;
+  }
+
+  /** Commits the pending tag on Enter or comma, then clears the input. */
+  protected addTag(): void {
+    const tag = this.tagInput.trim().replace(/,+$/g, '').toLowerCase();
+    if (tag && !this.tags.includes(tag)) {
+      this.tags = [...this.tags, tag];
+    }
+    this.tagInput = '';
+  }
+
+  protected removeTag(tag: string): void {
+    this.tags = this.tags.filter((t) => t !== tag);
   }
 
   protected cancel(): void {
@@ -123,6 +179,11 @@ export class ItemEditorComponent implements OnInit {
       name: this.name.trim(),
       expireDate: new Date(this.expireDate).toISOString(),
       thumbUrl,
+      quantity: this.quantity,
+      favorite: this.favorite,
+      notes: this.notes.trim(),
+      price: Math.max(0, Number(this.price) || 0),
+      tags: this.tags,
     };
     void this.modalCtrl.dismiss(item, 'confirm');
   }

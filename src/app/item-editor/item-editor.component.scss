@@ -58,3 +58,38 @@
   --height: fit-content;
   --border-radius: 8px;
 }
+
+.quantity-stepper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  ion-button {
+    margin: 0;
+    --padding-start: 8px;
+    --padding-end: 8px;
+  }
+}
+
+.quantity-value {
+  min-width: 40px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.total-hint {
+  color: var(--ion-color-medium);
+  font-size: 13px;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 16px 0;
+
+  ion-chip {
+    margin: 0;
+  }
+}

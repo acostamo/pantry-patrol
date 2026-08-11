@@ -38,7 +38,7 @@
           <img slot="start" [src]="group.displayThumb" [alt]="group.name" class="divider-thumb" />
         }
         <ion-label>{{ group.name }}</ion-label>
-        <ion-badge slot="end" color="medium">{{ group.items.length }}</ion-badge>
+        <ion-badge slot="end" color="medium">{{ group.units }}</ion-badge>
       </ion-item-divider>
 
       @for (item of group.items; track item.id) {
@@ -50,8 +50,15 @@
           </ion-item-options>
 
           <ion-item button [detail]="false" (click)="edit(item)">
+            <ion-icon slot="start" class="favorite-star" [name]="item.favorite ? 'star' : ''" />
             <ion-label>
+              @if (item.quantity > 1) {
+                <ion-text class="item-quantity">×{{ item.quantity }}</ion-text>
+              }
               <p>{{ expiryLabel(item) }}</p>
+              @if (item.notes) {
+                <p class="item-notes">{{ item.notes }}</p>
+              }
             </ion-label>
             <ion-badge slot="end" [color]="statusColors[expirationStatus(item)]">
               {{ expirationStatus(item) | translate }}
