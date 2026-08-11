@@ -36,6 +36,14 @@ export interface PantryItem {
 export const DEFAULT_QUANTITY = 1;
 
 /**
+ * Random numeric id used to schedule/cancel the OS local notification.
+ * Crypto-secure so ids can't be guessed or collide predictably.
+ */
+export function randomNotificationId(): number {
+  return crypto.getRandomValues(new Uint32Array(1))[0] % 1_000_000_000;
+}
+
+/**
  * Coerces raw persisted data into a fully-populated item, filling defaults
  * for any fields absent in the stored JSON. Used on hydration so older
  * documents upgrade in place and the rest of the app can assume presence.
@@ -49,7 +57,7 @@ export function normalizeItem(raw: Partial<PantryItem>): PantryItem {
     name: raw.name ?? '',
     thumbUrl: raw.thumbUrl ?? '',
     expireDate: raw.expireDate ?? '',
-    notificationId: raw.notificationId ?? Math.floor(Math.random() * 1_000_000_000),
+    notificationId: raw.notificationId ?? randomNotificationId(),
     quantity,
     addedDate: raw.addedDate ?? new Date().toISOString(),
     favorite: !!raw.favorite,

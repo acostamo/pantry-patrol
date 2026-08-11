@@ -1,12 +1,8 @@
-name: opencode Review
+name: opencode-review
 
 on:
   pull_request:
-    types: [ opened, synchronize, reopened, ready_for_review ]
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   review:
@@ -14,16 +10,21 @@ jobs:
     permissions:
       id-token: write
       contents: read
-      pull-requests: write
+      pull-requests: read
+      issues: read
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           persist-credentials: false
-
-      - name: Run opencode review
-        uses: anomalyco/opencode/github@latest
+      - uses: anomalyco/opencode/github@latest
         env:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           model: opencode/deepseek-v4-flash-free
+          use_github_token: true
+          prompt: |
+            Review this pull request:
+            - Check for code quality issues
+            - Look for potential bugs
+            - Suggest improvements

@@ -31,6 +31,7 @@ import {
   ExpirationStatus,
   expirationStatus,
   PantryItem,
+  randomNotificationId,
 } from '../core/models/pantry-item.model';
 import {PantryStore} from '../core/services/pantry-store.service';
 import {PhotoService} from '../core/services/photo.service';
@@ -197,7 +198,7 @@ export class HomePage {
       name: '',
       thumbUrl: '',
       expireDate: '',
-      notificationId: Math.floor(Math.random() * 1_000_000_000),
+      notificationId: randomNotificationId(),
       quantity: DEFAULT_QUANTITY,
       addedDate: new Date().toISOString(),
       favorite: false,

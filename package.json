@@ -1,8 +1,8 @@
 {
   "name": "pantry-patrol",
   "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "author": "acostamo",
+  "homepage": "https://acostamo.com/",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -71,6 +71,5 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.65.0"
-  },
-  "description": "An Ionic project"
+  }
 }
