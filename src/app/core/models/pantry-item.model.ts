@@ -18,6 +18,45 @@ export interface PantryItem {
   expireDate: string;
   /** Numeric id used to schedule/cancel the OS local notification. */
   notificationId: number;
+  /** Number of identical units sharing this expiry (always >= 1). */
+  quantity: number;
+  /** ISO-8601 date string, set once when the item is first added. */
+  addedDate: string;
+  /** Pinned items sort first on the home list. */
+  favorite: boolean;
+  /** Free-form notes. */
+  notes: string;
+  /** Free-form tags. */
+  tags: string[];
+  /** Price per unit (>= 0). */
+  price: number;
+}
+
+/** Default unit count for a freshly created item. */
+export const DEFAULT_QUANTITY = 1;
+
+/**
+ * Coerces raw persisted data into a fully-populated item, filling defaults
+ * for any fields absent in the stored JSON. Used on hydration so older
+ * documents upgrade in place and the rest of the app can assume presence.
+ */
+export function normalizeItem(raw: Partial<PantryItem>): PantryItem {
+  const quantity = Math.max(DEFAULT_QUANTITY, Math.floor(Number(raw.quantity) || DEFAULT_QUANTITY));
+  const price = Math.max(0, Number(raw.price) || 0);
+  return {
+    id: raw.id ?? crypto.randomUUID(),
+    barcode: raw.barcode ?? '',
+    name: raw.name ?? '',
+    thumbUrl: raw.thumbUrl ?? '',
+    expireDate: raw.expireDate ?? '',
+    notificationId: raw.notificationId ?? Math.floor(Math.random() * 1_000_000_000),
+    quantity,
+    addedDate: raw.addedDate ?? new Date().toISOString(),
+    favorite: !!raw.favorite,
+    notes: raw.notes ?? '',
+    tags: Array.isArray(raw.tags) ? raw.tags.filter((t): t is string => typeof t === 'string') : [],
+    price,
+  };
 }
 
 /** Whole days from today until the expiration date (negative when already expired). */

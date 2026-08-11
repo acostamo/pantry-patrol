@@ -1,4 +1,4 @@
-package io.pantrypatrol.app;
+package com.acostamo.pantrypatrol;
 
 import com.getcapacitor.BridgeActivity;
 

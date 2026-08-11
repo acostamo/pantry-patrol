@@ -7,6 +7,9 @@
       {{ (isNew ? 'editor.add.title' : 'editor.edit.title') | translate }}
     </ion-title>
     <ion-buttons slot="end">
+      <ion-button (click)="toggleFavorite()" [attr.aria-label]="'editor.favorite' | translate">
+        <ion-icon slot="icon-only" [name]="favorite ? 'star' : 'star-outline'" />
+      </ion-button>
       <ion-button [disabled]="!canSave" (click)="save()">
         <strong>{{ (isNew ? 'editor.add' : 'editor.save') | translate }}</strong>
       </ion-button>
@@ -45,6 +48,90 @@
         [(ngModel)]="name"
       />
     </ion-item>
+
+    <ion-item>
+      <ion-label>{{ 'editor.quantity.label' | translate }}</ion-label>
+      <div slot="end" class="quantity-stepper">
+        <ion-button
+          fill="outline"
+          size="small"
+          (click)="decrementQuantity()"
+          [disabled]="quantity <= 1"
+          [attr.aria-label]="'editor.quantity.decrease' | translate"
+        >
+          <ion-icon slot="icon-only" name="remove" />
+        </ion-button>
+        <span class="quantity-value">{{ quantity }}</span>
+        <ion-button
+          fill="outline"
+          size="small"
+          (click)="incrementQuantity()"
+          [disabled]="quantity >= 99"
+          [attr.aria-label]="'editor.quantity.increase' | translate"
+        >
+          <ion-icon slot="icon-only" name="add" />
+        </ion-button>
+      </div>
+    </ion-item>
+
+    @if (!isNew) {
+      <ion-item>
+        <ion-label>
+          <p>{{ 'editor.added.on' | translate }} {{ addedDateLabel }}</p>
+        </ion-label>
+      </ion-item>
+    }
+
+    <ion-item>
+      <ion-input
+        [label]="'editor.price.label' | translate"
+        label-placement="stacked"
+        type="number"
+        min="0"
+        step="0.01"
+        [(ngModel)]="price"
+      />
+    </ion-item>
+
+    @if (price > 0) {
+      <ion-item>
+        <ion-label class="total-hint">
+          {{ 'editor.total' | translate }}: {{ totalPrice }}
+        </ion-label>
+      </ion-item>
+    }
+
+    <ion-item>
+      <ion-textarea
+        [label]="'editor.notes.label' | translate"
+        label-placement="stacked"
+        [autoGrow]="true"
+        rows="3"
+        [(ngModel)]="notes"
+      />
+    </ion-item>
+
+    <ion-item>
+      <ion-input
+        [label]="'editor.tags.label' | translate"
+        label-placement="stacked"
+        [placeholder]="'editor.tags.placeholder' | translate"
+        [(ngModel)]="tagInput"
+        (keydown.enter)="addTag()"
+        (ionBlur)="addTag()"
+      />
+    </ion-item>
+
+    @if (tags.length > 0) {
+      <div class="tag-list">
+        @for (tag of tags; track tag) {
+          <ion-chip>
+            <ion-label>{{ tag }}</ion-label>
+            <ion-icon name="close" (click)="removeTag(tag)" />
+          </ion-chip>
+        }
+      </div>
+    }
 
     <ion-item>
       <ion-label>{{ 'editor.expiry.label' | translate }}</ion-label>
