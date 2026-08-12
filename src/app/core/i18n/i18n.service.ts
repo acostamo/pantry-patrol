@@ -1,12 +1,7 @@
-import { Injectable, signal } from '@angular/core';
-import { Preferences } from '@capacitor/preferences';
+import {Injectable, signal} from '@angular/core';
+import {Preferences} from '@capacitor/preferences';
 
-import {
-  FALLBACK_LANG,
-  Lang,
-  TRANSLATIONS,
-  detectSystemLang,
-} from './translations';
+import {detectSystemLang, FALLBACK_LANG, Lang, TRANSLATIONS,} from './translations';
 
 const LANG_KEY = 'app_lang';
 
@@ -30,10 +25,8 @@ export class I18nService {
 
   /** Translate a key, replacing `{0}`, `{1}`, … placeholders in order. */
   translate(key: string, ...args: string[]): string {
-    let template = TRANSLATIONS[this.lang()][key];
-    if (template === undefined) {
-      template = TRANSLATIONS[FALLBACK_LANG][key] ?? key;
-    }
+    const template =
+      TRANSLATIONS[this.lang()][key] ?? TRANSLATIONS[FALLBACK_LANG][key] ?? key;
     return template.replace(/\{(\d+)\}/g, (_, idx) => args[+idx] ?? `{${idx}}`);
   }
 }

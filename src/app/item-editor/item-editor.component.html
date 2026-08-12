@@ -18,19 +18,19 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <div class="photo-area" (click)="pickPhoto()">
+  <button type="button" class="photo-area" (click)="pickPhoto()">
     @if (previewUri) {
       <img [src]="previewUri" [alt]="name" class="photo-preview" />
-      <div class="photo-overlay">
+      <span class="photo-overlay">
         <ion-icon name="camera-outline" />
-      </div>
+      </span>
     } @else {
-      <div class="photo-placeholder">
+      <span class="photo-placeholder">
         <ion-icon name="camera-outline" />
         <span>{{ 'photo.placeholder' | translate }}</span>
-      </div>
+      </span>
     }
-  </div>
+  </button>
 
   <ion-list [inset]="true">
     @if (draft.barcode) {
@@ -127,7 +127,14 @@
         @for (tag of tags; track tag) {
           <ion-chip>
             <ion-label>{{ tag }}</ion-label>
-            <ion-icon name="close" (click)="removeTag(tag)" />
+            <ion-icon
+              name="close"
+              role="button"
+              tabindex="0"
+              (click)="removeTag(tag)"
+              (keydown.enter)="removeTag(tag)"
+              (keydown.space)="removeTag(tag)"
+            />
           </ion-chip>
         }
       </div>

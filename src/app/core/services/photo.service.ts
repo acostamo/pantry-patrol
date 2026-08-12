@@ -1,15 +1,16 @@
-import { Injectable } from '@angular/core';
-import { Capacitor } from '@capacitor/core';
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { Directory, Filesystem } from '@capacitor/filesystem';
+import {Injectable} from '@angular/core';
+import {Capacitor} from '@capacitor/core';
+import type {MediaResult} from '@capacitor/camera';
+import {Camera, MediaTypeSelection} from '@capacitor/camera';
+import {Directory, Filesystem} from '@capacitor/filesystem';
 
 /**
  * Captures, persists, and disposes of product photos.
  *
  * On native platforms the photo is saved as a JPEG file in the app's
  * private Documents directory so the pantry JSON stays lean. On web the
- * in-memory base64 data URL is stored directly — good enough for dev
- * mode (lost on page reload, which is acceptable).
+ * image is stored as a data URL directly — good enough for dev mode
+ * (lost on page reload, which is acceptable).
  */
 @Injectable({ providedIn: 'root' })
 export class PhotoService {
@@ -17,12 +18,14 @@ export class PhotoService {
 
   /** Opens the device camera and returns a temporary URI ready for preview. */
   async capturePhoto(): Promise<string | null> {
-    return this.pickImage(CameraSource.Camera);
+    return this.pickMedia(() => Camera.takePhoto({ quality: 85, webUseInput: true }));
   }
 
   /** Opens the photo gallery and returns a temporary URI ready for preview. */
   async pickFromGallery(): Promise<string | null> {
-    return this.pickImage(CameraSource.Photos);
+    return this.pickMedia(async () =>
+      (await Camera.chooseFromGallery({ mediaType: MediaTypeSelection.Photo })).results[0],
+    );
   }
 
   /**
@@ -57,17 +60,29 @@ export class PhotoService {
     return Capacitor.convertFileSrc(thumbUrl);
   }
 
-  private async pickImage(source: CameraSource): Promise<string | null> {
+  private async pickMedia(call: () => Promise<MediaResult | undefined>): Promise<string | null> {
     try {
-      const photo = await Camera.getPhoto({
-        resultType: this.isNative ? CameraResultType.Uri : CameraResultType.DataUrl,
-        source,
-        quality: 85,
-        webUseInput: true,
-      });
-      return this.isNative ? (photo.path ?? null) : (photo.dataUrl ?? null);
+      const media = await call();
+      if (!media) return null;
+      if (this.isNative) return media.uri ?? null;
+      return media.webPath ? await this.toPersistableDataUrl(media.webPath) : null;
     } catch {
       return null; // user cancelled or permission denied
     }
+  }
+
+  /**
+   * On web the new Camera API hands back a blob URL for large images.
+   * Converting to a data URL keeps the preview working after a page reload.
+   */
+  private async toPersistableDataUrl(webPath: string): Promise<string> {
+    if (webPath.startsWith('data:')) return webPath;
+    const blob = await (await fetch(webPath)).blob();
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error(reader.error?.message ?? 'Failed to read image data'));
+      reader.readAsDataURL(blob);
+    });
   }
 }

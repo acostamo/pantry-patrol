@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 import {
   IonContent,
   IonHeader,
@@ -15,14 +15,13 @@ import {
   MenuController,
 } from '@ionic/angular/standalone';
 
-import { Lang, SUPPORTED_LANGS, LANG_NAMES } from '../core/i18n/translations';
-import { I18nService } from '../core/i18n/i18n.service';
-import { TranslatePipe } from '../core/i18n/translate.pipe';
+import {Lang, LANG_NAMES, SUPPORTED_LANGS} from '../core/i18n/translations';
+import {I18nService} from '../core/i18n/i18n.service';
+import {TranslatePipe} from '../core/i18n/translate.pipe';
 
 @Component({
   selector: 'app-menu',
   templateUrl: './app-menu.component.html',
-  styleUrl: './app-menu.component.scss',
   imports: [
     FormsModule,
     IonContent,

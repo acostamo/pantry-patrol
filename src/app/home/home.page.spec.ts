@@ -105,7 +105,7 @@ describe('HomePage', () => {
       fixture.detectChanges();
 
       const groups = component['groups']();
-      expect(groups.length).toBe(2);
+      expect(groups).toHaveSize(2);
       const milk = groups.find((g) => g.name === 'Milk');
       expect(milk?.units).toBe(3);
       expect(milk?.items.length).toBe(2);

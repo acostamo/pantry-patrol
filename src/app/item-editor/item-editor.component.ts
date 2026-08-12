@@ -116,7 +116,7 @@ export class ItemEditorComponent implements OnInit {
   /** Localized "added on" caption for existing items. */
   protected get addedDateLabel(): string {
     const d = new Date(this.draft.addedDate);
-    if (isNaN(d.getTime())) return '';
+    if (Number.isNaN(d.getTime())) return '';
     return d.toLocaleDateString(this.i18n.lang(), {
       day: 'numeric',
       month: 'short',
@@ -138,7 +138,11 @@ export class ItemEditorComponent implements OnInit {
 
   /** Commits the pending tag on Enter or comma, then clears the input. */
   protected addTag(): void {
-    const tag = this.tagInput.trim().replace(/,+$/g, '').toLowerCase();
+    let trimmed = this.tagInput.trim();
+    while (trimmed.endsWith(',')) {
+      trimmed = trimmed.slice(0, -1);
+    }
+    const tag = trimmed.toLowerCase();
     if (tag && !this.tags.includes(tag)) {
       this.tags = [...this.tags, tag];
     }
