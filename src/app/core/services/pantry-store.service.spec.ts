@@ -59,7 +59,7 @@ describe('PantryStore', () => {
     await store.load();
 
     const items = store.items();
-    expect(items.length).toBe(1);
+    expect(items).toHaveSize(1);
     expect(items[0].quantity).toBe(1);
     expect(items[0].favorite).toBe(false);
     expect(items[0].notes).toBe('');

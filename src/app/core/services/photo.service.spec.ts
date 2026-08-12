@@ -1,7 +1,7 @@
 import {TestBed} from '@angular/core/testing';
 import {Capacitor} from '@capacitor/core';
-import {CameraResultType, CameraSource} from '@capacitor/camera';
 import {CameraWeb} from '@capacitor/camera/dist/esm/web';
+import {MediaTypeSelection} from '@capacitor/camera';
 import {Directory} from '@capacitor/filesystem';
 import {FilesystemWeb} from '@capacitor/filesystem/dist/esm/web';
 
@@ -9,38 +9,51 @@ import {PhotoService} from './photo.service';
 
 describe('PhotoService', () => {
   let service: PhotoService;
-  let getPhotoSpy: jasmine.Spy;
+  let takePhotoSpy: jasmine.Spy;
+  let chooseSpy: jasmine.Spy;
 
   describe('on web', () => {
     beforeEach(() => {
       TestBed.resetTestingModule();
       spyOn(Capacitor, 'isNativePlatform').and.returnValue(false);
-      getPhotoSpy = spyOn(CameraWeb.prototype, 'getPhoto');
+      takePhotoSpy = spyOn(CameraWeb.prototype, 'takePhoto');
+      chooseSpy = spyOn(CameraWeb.prototype, 'chooseFromGallery');
       service = TestBed.inject(PhotoService);
     });
 
     it('captures a data-url photo', async () => {
-      getPhotoSpy.and.resolveTo({ dataUrl: 'data:image/png;base64,x' } as never);
+      takePhotoSpy.and.resolveTo({ webPath: 'data:image/png;base64,x', saved: false } as never);
 
       const uri = await service.capturePhoto();
 
       expect(uri).toBe('data:image/png;base64,x');
-      expect(getPhotoSpy).toHaveBeenCalledWith(
-        jasmine.objectContaining({ resultType: CameraResultType.DataUrl, source: CameraSource.Camera }),
-      );
+      expect(takePhotoSpy).toHaveBeenCalledWith({ quality: 85, webUseInput: true });
+    });
+
+    it('converts blob web paths into data urls for persistence', async () => {
+      takePhotoSpy.and.resolveTo({ webPath: 'blob:http://localhost/abc', saved: false } as never);
+      spyOn(window, 'fetch').and.resolveTo({
+        blob: async () => new Blob(['x'], { type: 'image/png' }),
+      } as never);
+
+      const uri = await service.capturePhoto();
+
+      expect(uri).toMatch(/^data:image\/png;base64,/);
     });
 
     it('picks from the gallery', async () => {
-      getPhotoSpy.and.resolveTo({ dataUrl: 'data:image/png;base64,y' } as never);
+      chooseSpy.and.resolveTo({
+        results: [{ webPath: 'data:image/png;base64,y', saved: false }],
+      } as never);
 
       const uri = await service.pickFromGallery();
 
       expect(uri).toBe('data:image/png;base64,y');
-      expect(getPhotoSpy).toHaveBeenCalledWith(jasmine.objectContaining({ source: CameraSource.Photos }));
+      expect(chooseSpy).toHaveBeenCalledWith({ mediaType: MediaTypeSelection.Photo });
     });
 
     it('returns null when the user cancels', async () => {
-      getPhotoSpy.and.rejectWith(new Error('cancelled'));
+      takePhotoSpy.and.rejectWith(new Error('cancelled'));
 
       expect(await service.capturePhoto()).toBeNull();
     });
@@ -57,17 +70,17 @@ describe('PhotoService', () => {
     beforeEach(() => {
       TestBed.resetTestingModule();
       spyOn(Capacitor, 'isNativePlatform').and.returnValue(true);
-      getPhotoSpy = spyOn(CameraWeb.prototype, 'getPhoto');
+      takePhotoSpy = spyOn(CameraWeb.prototype, 'takePhoto');
+      chooseSpy = spyOn(CameraWeb.prototype, 'chooseFromGallery');
       service = TestBed.inject(PhotoService);
     });
 
     it('captures a file uri photo', async () => {
-      getPhotoSpy.and.resolveTo({ path: 'file:///tmp/photo.jpg' } as never);
+      takePhotoSpy.and.resolveTo({ uri: 'file:///tmp/photo.jpg', saved: false } as never);
 
       const uri = await service.capturePhoto();
 
       expect(uri).toBe('file:///tmp/photo.jpg');
-      expect(getPhotoSpy).toHaveBeenCalledWith(jasmine.objectContaining({ resultType: CameraResultType.Uri }));
     });
 
     it('copies temp uris into app storage', async () => {
@@ -104,9 +117,10 @@ describe('PhotoService', () => {
     });
 
     it('swallows delete failures', async () => {
-      spyOn(FilesystemWeb.prototype, 'deleteFile').and.rejectWith(new Error('gone'));
+      const deleteSpy = spyOn(FilesystemWeb.prototype, 'deleteFile').and.rejectWith(new Error('gone'));
 
       await expectAsync(service.deleteIfLocal('file:///x.jpg')).toBeResolved();
+      expect(deleteSpy).toHaveBeenCalled();
     });
 
     it('converts native file uris for display', () => {
