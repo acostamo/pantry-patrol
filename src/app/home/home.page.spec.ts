@@ -148,6 +148,16 @@ describe('HomePage', () => {
       component['expiryLabel'](item({ expireDate: new Date(Date.now() + 3 * 86_400_000).toISOString() }));
       expect(i18n.translate).toHaveBeenCalledWith('expiry.future.plural', '3');
     });
+
+    it('labels one day in the past', () => {
+      component['expiryLabel'](item({ expireDate: new Date(Date.now() - 86_400_000).toISOString() }));
+      expect(i18n.translate).toHaveBeenCalledWith('expiry.past.singular', '1');
+    });
+
+    it('labels one day in the future', () => {
+      component['expiryLabel'](item({ expireDate: new Date(Date.now() + 86_400_000).toISOString() }));
+      expect(i18n.translate).toHaveBeenCalledWith('expiry.future.singular', '1');
+    });
   });
 
   describe('addManually', () => {
