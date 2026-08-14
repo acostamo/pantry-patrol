@@ -141,4 +141,22 @@ describe('PantryStore', () => {
 
     expect(store.items().map((i) => i.id)).toEqual(['a', 'b', 'c']);
   });
+
+  it('replaceAll() replaces the inventory and reschedules alerts', async () => {
+    const existing = baseItem({id: 'old'});
+    await store.add(existing);
+    (notifications.cancelExpirationAlert as jasmine.Spy).calls.reset();
+    (notifications.scheduleExpirationAlert as jasmine.Spy).calls.reset();
+    const replacement = [
+      baseItem({id: 'n1', name: 'Rice'}),
+      baseItem({id: 'n2', name: 'Pasta', quantity: 3}),
+    ];
+
+    await store.replaceAll(replacement);
+
+    expect(store.items().map((i) => i.id)).toEqual(['n1', 'n2']);
+    expect(notifications.cancelExpirationAlert).toHaveBeenCalledWith(existing.notificationId);
+    expect(notifications.scheduleExpirationAlert).toHaveBeenCalledTimes(2);
+    expect(prefsSet).toHaveBeenCalled();
+  });
 });

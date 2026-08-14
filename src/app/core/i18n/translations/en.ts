@@ -3,6 +3,8 @@ export const en: Record<string, string> = {
   'home.empty': 'Your pantry is empty.\nScan a barcode or add an item manually.',
   'home.scan': 'Scan barcode',
   'home.manual': 'Add manually',
+  'home.search.placeholder': 'Search your pantry',
+  'home.search.empty': 'No items match your search.',
 
   'EXPIRED': 'Expired',
   'IMPENDING': 'Impending',
@@ -39,6 +41,9 @@ export const en: Record<string, string> = {
   'toast.updated': '"{0}" updated',
   'toast.removed': '"{0}" removed',
   'toast.renewed': '"{0}" renewed for 7 more days',
+  'toast.exported': 'Backup exported',
+  'toast.imported': 'Backup restored',
+  'toast.import.invalid': 'This is not a valid Pantry Patrol backup',
 
   'undo': 'Undo',
 
@@ -51,6 +56,20 @@ export const en: Record<string, string> = {
 
   'menu.title': 'Settings',
   'menu.language': 'Language',
+  'menu.theme': 'Theme',
+  'menu.data': 'Data',
+  'menu.export.json': 'Export JSON',
+  'menu.export.csv': 'Export CSV',
+  'menu.import': 'Import backup',
+
+  'theme.light': 'Light',
+  'theme.dark': 'Dark',
+  'theme.system': 'System default',
+
+  'import.confirm.title': 'Import backup?',
+  'import.confirm.message': 'Replace the current inventory with {0} items?',
+  'import.confirm.ok': 'Import',
+  'import.confirm.cancel': 'Cancel',
 
   'photo.title': 'Product photo',
   'photo.camera': 'Take photo',

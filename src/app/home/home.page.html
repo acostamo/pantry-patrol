@@ -18,6 +18,12 @@
       <p>{{ 'home.empty' | translate }}</p>
     </div>
   } @else {
+    <ion-searchbar
+      [placeholder]="'home.search.placeholder' | translate"
+      (ionInput)="onSearch($event)"
+      [debounce]="150"
+    />
+
     <div class="summary-bar">
       <ion-chip [outline]="true" color="danger">
         <ion-label>{{ summary().expired }} {{ 'EXPIRED' | translate }}</ion-label>
@@ -29,51 +35,58 @@
         <ion-label>{{ summary().stable }} {{ 'STABLE' | translate }}</ion-label>
       </ion-chip>
     </div>
-  }
 
-  <ion-list>
-    @for (group of groups(); track group.name) {
-      <ion-item-divider sticky="true">
-        @if (group.displayThumb) {
-          <img slot="start" [src]="group.displayThumb" [alt]="group.name" class="divider-thumb" />
+    <ion-list>
+      @for (group of visibleGroups(); track group.name) {
+        <ion-item-divider sticky="true">
+          @if (group.displayThumb) {
+            <img slot="start" [src]="group.displayThumb" [alt]="group.name" class="divider-thumb" />
+          }
+          <ion-label>{{ group.name }}</ion-label>
+          <ion-badge slot="end" color="medium">{{ group.units }}</ion-badge>
+        </ion-item-divider>
+
+        @for (item of group.items; track item.id) {
+          <ion-item-sliding #sliding>
+            <ion-item-options side="start">
+              <ion-item-option color="success" (click)="renew(item); sliding.close()">
+                <ion-icon slot="icon-only" name="refresh-outline" />
+              </ion-item-option>
+            </ion-item-options>
+
+            <ion-item button [detail]="false" (click)="edit(item)">
+              <ion-icon slot="start" class="favorite-star" [name]="item.favorite ? 'star' : ''" />
+              <ion-label>
+                @if (item.quantity > 1) {
+                  <ion-text class="item-quantity">×{{ item.quantity }}</ion-text>
+                }
+                <p>{{ expiryLabel(item) }}</p>
+                @if (item.notes) {
+                  <p class="item-notes">{{ item.notes }}</p>
+                }
+              </ion-label>
+              <ion-badge slot="end" [color]="statusColors[expirationStatus(item)]">
+                {{ expirationStatus(item) | translate }}
+              </ion-badge>
+            </ion-item>
+
+            <ion-item-options side="end">
+              <ion-item-option color="danger" (click)="remove(item); sliding.close()">
+                <ion-icon slot="icon-only" name="trash-outline" />
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
         }
-        <ion-label>{{ group.name }}</ion-label>
-        <ion-badge slot="end" color="medium">{{ group.units }}</ion-badge>
-      </ion-item-divider>
-
-      @for (item of group.items; track item.id) {
-        <ion-item-sliding #sliding>
-          <ion-item-options side="start">
-            <ion-item-option color="success" (click)="renew(item); sliding.close()">
-              <ion-icon slot="icon-only" name="refresh-outline" />
-            </ion-item-option>
-          </ion-item-options>
-
-          <ion-item button [detail]="false" (click)="edit(item)">
-            <ion-icon slot="start" class="favorite-star" [name]="item.favorite ? 'star' : ''" />
-            <ion-label>
-              @if (item.quantity > 1) {
-                <ion-text class="item-quantity">×{{ item.quantity }}</ion-text>
-              }
-              <p>{{ expiryLabel(item) }}</p>
-              @if (item.notes) {
-                <p class="item-notes">{{ item.notes }}</p>
-              }
-            </ion-label>
-            <ion-badge slot="end" [color]="statusColors[expirationStatus(item)]">
-              {{ expirationStatus(item) | translate }}
-            </ion-badge>
-          </ion-item>
-
-          <ion-item-options side="end">
-            <ion-item-option color="danger" (click)="remove(item); sliding.close()">
-              <ion-icon slot="icon-only" name="trash-outline" />
-            </ion-item-option>
-          </ion-item-options>
-        </ion-item-sliding>
       }
-    }
-  </ion-list>
+
+      @if (visibleGroups().length === 0) {
+        <div class="search-empty">
+          <ion-icon name="search-outline" />
+          <p>{{ 'home.search.empty' | translate }}</p>
+        </div>
+      }
+    </ion-list>
+  }
 
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button>

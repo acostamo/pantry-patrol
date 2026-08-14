@@ -121,6 +121,47 @@ describe('HomePage', () => {
     });
   });
 
+  describe('visibleGroups', () => {
+    const milk = item({id: 'a', name: 'Whole Milk', tags: ['dairy', 'fresh'], expireDate: '2026-06-01T00:00:00.000Z'});
+    const rice = item({id: 'b', name: 'Rice', tags: ['grains'], expireDate: '2026-09-01T00:00:00.000Z'});
+    const setup = () => itemsSignal.set([milk, rice]);
+
+    it('shows all groups with an empty query', () => {
+      setup();
+      expect(component['visibleGroups']()).toHaveSize(2);
+    });
+
+    it('filters by name case-insensitively', () => {
+      setup();
+      component['query'].set('MILK');
+      expect(component['visibleGroups']().map((g) => g.name)).toEqual(['Whole Milk']);
+    });
+
+    it('filters by tag', () => {
+      setup();
+      component['query'].set('grains');
+      expect(component['visibleGroups']().map((g) => g.name)).toEqual(['Rice']);
+    });
+
+    it('returns an empty list when nothing matches', () => {
+      setup();
+      component['query'].set('zzz');
+      expect(component['visibleGroups']()).toHaveSize(0);
+    });
+
+    it('clears the filter again with an empty query', () => {
+      setup();
+      component['query'].set('milk');
+      component['query'].set('');
+      expect(component['visibleGroups']()).toHaveSize(2);
+    });
+
+    it('updates the query from the search bar', () => {
+      component['onSearch']({detail: {value: 'rice'}} as unknown as Event);
+      expect(component['query']()).toBe('rice');
+    });
+  });
+
   describe('summary', () => {
     it('counts items by expiration status', () => {
       itemsSignal.set([
