@@ -63,6 +63,20 @@ export class PantryStore {
     await this.update({ ...item, expireDate: renewed.toISOString() });
   }
 
+  /** Replaces the whole inventory (backup import). Reschedules all alerts. */
+  async replaceAll(items: PantryItem[]): Promise<void> {
+    const previous = this.itemsSignal();
+    for (const item of previous) {
+      await this.notifications.cancelExpirationAlert(item.notificationId);
+    }
+    const normalized = items.map(normalizeItem);
+    this.itemsSignal.set(normalized);
+    await this.persist();
+    for (const item of normalized) {
+      await this.notifications.scheduleExpirationAlert(item);
+    }
+  }
+
   private async persist(): Promise<void> {
     await Preferences.set({ key: STORAGE_KEY, value: JSON.stringify(this.itemsSignal()) });
   }

@@ -2,10 +2,13 @@
 
 Pantry Patrol — 100% offline Ionic + Capacitor pantry inventory app (Angular 22 standalone, Capacitor 8, TypeScript 6).
 
+> **Target devices:** Android/iOS **phones and tablets** are the primary target. The web build exists for **development/testing only** — keep native UX first-class; web fallbacks (file `<input>`, browser download) are for dev convenience, never an excuse to degrade the native experience.
+
 ## Environment gotchas (this machine)
 
 - Windows PowerShell blocks `.ps1` scripts (execution policy): always call `yarn.cmd` instead of `yarn` and `yarnpkg.cmd` instead of `yarnpkg` (same issue as `npm.cmd`).
 - `yarn.cmd cap sync ios` fails on Windows (pod install requires macOS). Use `yarn.cmd cap copy ios` here; run the full sync on a Mac.
+- `JAVA_HOME` on this machine points to **JDK 25**, which Gradle 8.14 can't use ("Unsupported class file major version 69"). For Android builds, run with a supported JDK, e.g.: `$env:JAVA_HOME='C:\Program Files\Java\jdk21.0.7_6'; & .\android\gradlew.bat :app:assembleDebug --no-daemon`.
 
 ## Commands
 
@@ -19,8 +22,10 @@ Pantry Patrol — 100% offline Ionic + Capacitor pantry inventory app (Angular 2
 ## Architecture
 
 - `src/app/core/services/pantry-store.service.ts` (`PantryStore`) is the single source of truth: a signal holding the whole inventory, persisted as one JSON document under the `pantry_items` @capacitor/preferences key. Every mutation also schedules/cancels the item's OS local notification — mutate inventory only through this service, never directly.
-- Hydration happens once in the `AppComponent` constructor (`store.load()`); pages just read `store.items` (computed, sorted by soonest expiry).
+- Hydration happens once in the `AppComponent.ngOnInit` (`store.load()`, `i18n.init()`, `theme.init()`); pages just read `store.items` (computed, sorted by favorite-first then soonest expiry).
 - Native-only features (barcode scanner, local notifications, haptics) are guarded by `Capacitor.isNativePlatform()`; on web the scan FAB silently falls back to the manual editor — intentional, not a bug.
+- Theme (light/dark/system) is handled by `theme.service.ts` (`ThemeService`): it toggles `ion-palette-dark` on `<html>` and persists the choice to the `app_theme` Preferences key. `global.scss` imports Ionic's **`dark.class.css`** (NOT `dark.system.css`), so an explicit "light" preference can override a dark OS setting.
+- Backup lives in `core/services/backup.service.ts` (`BackupService`): JSON round-trip + CSV export, `PantryStore.replaceAll()` for import. Native export uses `@capacitor/share` (Filesystem temp file → share sheet); native import uses `@capawesome/capacitor-file-picker` (read via `fetch(Capacitor.convertFileSrc(path))`, never the plugin's `readData`). Web (testing only) uses a browser download and an `<input type="file">`.
 - The app's only network call is the Open Food Facts barcode lookup in `product-resolver.service.ts` (optional enhancement with offline fallback); everything else is fully offline.
 - `ItemEditorComponent` deliberately uses classic decorator `@Input()` (not signal `input()`), because Ionic `ModalController` `componentProps` assigns properties directly.
 - Each item carries a random integer `notificationId` so its scheduled notification can be cancelled on update/delete.

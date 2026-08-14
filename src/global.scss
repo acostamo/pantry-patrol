@@ -32,4 +32,9 @@
  * https://ionicframework.com/docs/theming/dark-mode
  */
 
-@import '@ionic/angular/css/palettes/dark.system.css';
+/*
+ * Class-driven dark palette: a light/dark/system preference is applied by
+ * toggling `ion-palette-dark` on <html> (see ThemeService). Importing
+ * dark.system.css here would make the OS preference impossible to override.
+ */
+@import '@ionic/angular/css/palettes/dark.class.css';

@@ -16,5 +16,40 @@
         }
       </ion-radio-group>
     </ion-list>
+
+    <ion-list>
+      <ion-list-header>{{ 'menu.theme' | translate }}</ion-list-header>
+      <ion-radio-group [(ngModel)]="theme">
+        @for (t of themes; track t) {
+          <ion-item>
+            <ion-radio slot="start" [value]="t" />
+            <ion-label>{{ 'theme.' + t | translate }}</ion-label>
+          </ion-item>
+        }
+      </ion-radio-group>
+    </ion-list>
+
+    <ion-list>
+      <ion-list-header>{{ 'menu.data' | translate }}</ion-list-header>
+      <ion-item button (click)="exportJson()">
+        <ion-icon slot="start" name="download-outline" />
+        <ion-label>{{ 'menu.export.json' | translate }}</ion-label>
+      </ion-item>
+      <ion-item button (click)="exportCsv()">
+        <ion-icon slot="start" name="download-outline" />
+        <ion-label>{{ 'menu.export.csv' | translate }}</ion-label>
+      </ion-item>
+      <ion-item button (click)="importBackup()">
+        <ion-icon slot="start" name="cloud-upload-outline" />
+        <ion-label>{{ 'menu.import' | translate }}</ion-label>
+      </ion-item>
+      <input
+        #importInput
+        type="file"
+        accept=".json,application/json"
+        hidden
+        (change)="onFileChosen($event)"
+      />
+    </ion-list>
   </ion-content>
 </ion-menu>

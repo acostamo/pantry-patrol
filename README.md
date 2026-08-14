@@ -2,6 +2,8 @@
 
 A 100% offline pantry inventory app that helps you stop wasting food and money. Catalog your groceries, track expiration dates, and get notified before items expire — all data stays on your device.
 
+> **Target devices:** Android/iOS **phones and tablets**. The web build exists for development/testing only.
+
 Built with **Ionic 8 + Angular 22 (standalone, signals) + Capacitor 8 + TypeScript 6**.
 
 ## Features
@@ -11,6 +13,10 @@ Built with **Ionic 8 + Angular 22 (standalone, signals) + Capacitor 8 + TypeScri
 - **Expiration tracking** — status badges (`EXPIRED` / `IMPENDING` / `STABLE`) and human-friendly labels, sorted by soonest expiry
 - **Local notifications** — kernel-scheduled OS alerts 3 days before expiry; they fire even if the app was killed
 - **Swipe gestures** — swipe right to quick-renew an item by 7 days, swipe left to dispose of it
+- **Rich items** — quantity, price, notes, tags, favorites (pinned to the top), and product photos
+- **Search** — filter your pantry by name or tag as it grows
+- **Light / Dark / System theme** — follows the OS by default, with an explicit override
+- **Backup** — export your inventory (JSON or CSV) and restore it on any device
 - **Haptic feedback** on add/update actions
 - **Fully offline** — the inventory lives in on-device storage (`@capacitor/preferences`); no account, no backend, no sync
 
@@ -73,8 +79,12 @@ src/app/
 │       ├── pantry-store.service.ts        # Signal store + persistence + notification sync
 │       ├── scanner.service.ts             # ML Kit barcode scanning
 │       ├── product-resolver.service.ts    # Open Food Facts lookup (offline-safe)
-│       └── notification.service.ts        # Local notification scheduling + haptics
-├── home/                                  # Inventory list, swipe actions, FAB
+│       ├── notification.service.ts        # Local notification scheduling + haptics
+│       ├── theme.service.ts               # Light/Dark/System appearance preference
+│       ├── photo.service.ts               # Camera/gallery capture + file persistence
+│       └── backup.service.ts              # JSON/CSV export + native/web import
+├── home/                                  # Inventory list, search, swipe actions, FAB
+├── app-menu/                              # Settings menu: language, theme, data/backup
 └── item-editor/                           # Add/edit modal with native date picker
 ```
 

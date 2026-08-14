@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, computed, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, inject, signal} from '@angular/core';
 import {
   IonBadge,
   IonChip,
@@ -16,6 +16,7 @@ import {
   IonLabel,
   IonList,
   IonMenuButton,
+  IonSearchbar,
   IonText,
   IonTitle,
   IonToolbar,
@@ -23,7 +24,16 @@ import {
   ToastController,
 } from '@ionic/angular/standalone';
 import {addIcons} from 'ionicons';
-import {add, barcodeOutline, basketOutline, createOutline, refreshOutline, star, trashOutline,} from 'ionicons/icons';
+import {
+  add,
+  barcodeOutline,
+  basketOutline,
+  createOutline,
+  refreshOutline,
+  searchOutline,
+  star,
+  trashOutline,
+} from 'ionicons/icons';
 
 import {
   daysUntilExpiry,
@@ -62,6 +72,7 @@ import {TranslatePipe} from '../core/i18n/translate.pipe';
     IonLabel,
     IonList,
     IonMenuButton,
+    IonSearchbar,
     IonText,
     IonTitle,
     IonToolbar,
@@ -79,6 +90,9 @@ export class HomePage {
   private readonly photoService = inject(PhotoService);
 
   protected readonly items = this.store.items;
+  /** Live search query, fed by the `ion-searchbar` ('' = show everything). */
+  protected readonly query = signal('');
+
   /** Groups items by product name, keeping the soonest-expiry sort within each group. */
   protected readonly groups = computed(() => {
     const buckets = new Map<string, PantryItem[]>();
@@ -98,6 +112,17 @@ export class HomePage {
       .sort((a, b) => a.items[0].expireDate.localeCompare(b.items[0].expireDate));
   });
 
+  /** Groups filtered by the search query (matches product names and tags). */
+  protected readonly visibleGroups = computed(() => {
+    const needle = this.query().trim().toLowerCase();
+    if (!needle) return this.groups();
+    return this.groups().filter(
+      (group) =>
+        group.name.toLowerCase().includes(needle) ||
+        group.items.some((item) => item.tags.some((tag) => tag.toLowerCase().includes(needle))),
+    );
+  });
+
   protected readonly summary = computed(() => {
     const all = this.items();
     return {
@@ -115,7 +140,13 @@ export class HomePage {
   };
 
   constructor() {
-    addIcons({ add, barcodeOutline, basketOutline, createOutline, refreshOutline, star, trashOutline });
+    addIcons({ add, barcodeOutline, basketOutline, createOutline, refreshOutline, searchOutline, star, trashOutline });
+  }
+
+  /** Reads the search bar input and updates the live query. */
+  protected onSearch(event: Event): void {
+    const detail = (event as CustomEvent).detail as {value?: string} | undefined;
+    this.query.set(detail?.value ?? '');
   }
 
   /** Capture + resolution phases: scan a barcode, resolve its metadata, stage it. */

@@ -3,6 +3,8 @@ export const pl: Record<string, string> = {
   'home.empty': 'Twoja spiżarnia jest pusta.\nZeskanuj kod kreskowy lub dodaj produkt ręcznie.',
   'home.scan': 'Skanuj kod',
   'home.manual': 'Dodaj ręcznie',
+  'home.search.placeholder': 'Szukaj w spiżarni',
+  'home.search.empty': 'Brak produktów pasujących do wyszukiwania.',
 
   'EXPIRED': 'Przeterminowany',
   'IMPENDING': 'Niedługo',
@@ -39,6 +41,9 @@ export const pl: Record<string, string> = {
   'toast.updated': '"{0}" zaktualizowano',
   'toast.removed': '"{0}" usunięto',
   'toast.renewed': '"{0}" przedłużono o 7 dni',
+  'toast.exported': 'Kopia zapasowa wyeksportowana',
+  'toast.imported': 'Kopia zapasowa przywrócona',
+  'toast.import.invalid': 'To nie jest poprawna kopia Pantry Patrol',
 
   'undo': 'Cofnij',
 
@@ -51,6 +56,20 @@ export const pl: Record<string, string> = {
 
   'menu.title': 'Ustawienia',
   'menu.language': 'Język',
+  'menu.theme': 'Motyw',
+  'menu.data': 'Dane',
+  'menu.export.json': 'Eksportuj JSON',
+  'menu.export.csv': 'Eksportuj CSV',
+  'menu.import': 'Importuj kopię',
+
+  'theme.light': 'Jasny',
+  'theme.dark': 'Ciemny',
+  'theme.system': 'Domyślny systemowy',
+
+  'import.confirm.title': 'Importować kopię?',
+  'import.confirm.message': 'Zastąpić obecny stan spiżarni {0} produktami?',
+  'import.confirm.ok': 'Importuj',
+  'import.confirm.cancel': 'Anuluj',
 
   'photo.title': 'Zdjęcie produktu',
   'photo.camera': 'Zrób zdjęcie',

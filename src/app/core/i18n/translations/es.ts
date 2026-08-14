@@ -3,6 +3,8 @@ export const es: Record<string, string> = {
   'home.empty': 'Tu despensa está vacía.\nEscanea un código o añade un artículo manualmente.',
   'home.scan': 'Escanear código',
   'home.manual': 'Añadir manualmente',
+  'home.search.placeholder': 'Buscar en tu despensa',
+  'home.search.empty': 'Ningún artículo coincide con tu búsqueda.',
 
   'EXPIRED': 'Caducado',
   'IMPENDING': 'Próximo',
@@ -39,6 +41,9 @@ export const es: Record<string, string> = {
   'toast.updated': '"{0}" actualizado',
   'toast.removed': '"{0}" eliminado',
   'toast.renewed': '"{0}" renovado por 7 días más',
+  'toast.exported': 'Copia de seguridad exportada',
+  'toast.imported': 'Copia de seguridad restaurada',
+  'toast.import.invalid': 'Este no es un archivo de copia de Pantry Patrol válido',
 
   'undo': 'Deshacer',
 
@@ -51,6 +56,20 @@ export const es: Record<string, string> = {
 
   'menu.title': 'Ajustes',
   'menu.language': 'Idioma',
+  'menu.theme': 'Tema',
+  'menu.data': 'Datos',
+  'menu.export.json': 'Exportar JSON',
+  'menu.export.csv': 'Exportar CSV',
+  'menu.import': 'Importar copia',
+
+  'theme.light': 'Claro',
+  'theme.dark': 'Oscuro',
+  'theme.system': 'Predeterminado del sistema',
+
+  'import.confirm.title': '¿Importar copia?',
+  'import.confirm.message': '¿Reemplazar el inventario actual con {0} artículos?',
+  'import.confirm.ok': 'Importar',
+  'import.confirm.cancel': 'Cancelar',
 
   'photo.title': 'Foto del producto',
   'photo.camera': 'Tomar foto',

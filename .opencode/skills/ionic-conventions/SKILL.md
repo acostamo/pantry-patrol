@@ -5,6 +5,8 @@ description: Code conventions for this Angular 22 + Ionic 8 standalone app. Use 
 
 # Pantry Patrol conventions
 
+> **Target devices:** Android/iOS **phones and tablets** are the primary target. The web build exists for **development/testing only** — keep native UX first-class; web fallbacks (file `<input>`, browser download, no scanner) are for dev convenience, never an excuse to degrade the native experience.
+
 ## Generating pages
 
 ```
